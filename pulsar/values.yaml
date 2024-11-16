@@ -1,0 +1,58 @@
+components:
+  pulsar_manager: false
+  zookeeper: true
+  bookkeeper: true
+  autorecovery: false
+  broker: true
+  functions: true
+  proxy: true
+  toolset: true
+
+# Disable dedicated monitoring
+kube-prometheus-stack:
+  enabled: false
+  prometheusOperator:
+    enabled: false
+  grafana:
+    enabled: false
+  alertmanager:
+    enabled: false
+  prometheus:
+    enabled: false
+
+# Disable persistence
+volumes:
+  persistence: false
+
+zookeeper:
+  replicaCount: 1
+  externalZookeeperServerList: ""
+  podMonitor:
+    enabled: true
+
+bookkeeper:
+  replicaCount: 1
+  configData:
+    # Minimal memory use for bookkeeper
+    # https://bookkeeper.apache.org/docs/reference/config#db-ledger-storage-settings
+    dbStorage_writeCacheMaxSizeMb: "32"
+    dbStorage_readAheadCacheMaxSizeMb: "32"
+    dbStorage_rocksDB_writeBufferSizeMB: "8"
+    dbStorage_rocksDB_blockCacheSize: "8388608"
+  podMonitor:
+    enabled: true
+
+broker:
+  replicaCount: 1
+  configData:
+    autoSkipNonRecoverableData: "true"
+    managedLedgerDefaultEnsembleSize: "1"
+    managedLedgerDefaultWriteQuorum: "1"
+    managedLedgerDefaultAckQuorum: "1"
+  podMonitor:
+    enabled: true
+
+proxy:
+  replicaCount: 1
+  podMonitor:
+    enabled: false

@@ -1,0 +1,35 @@
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: example-app-scaled-object
+  namespace: app
+spec:
+  scaleTargetRef:
+    name: example-app
+  pollingInterval: 7
+  cooldownPeriod: 0
+  minReplicaCount: 2
+  maxReplicaCount: 100
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 5
+          policies:
+          - type: Pods
+            value: 5
+            periodSeconds: 5
+          - type: Percent
+            value: 25 
+            periodSeconds: 10
+  triggers:
+    - type: prometheus
+      useCachedMetrics: false
+      metricType: Value
+      metadata:
+        serverAddress: http://prom-stack-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+        metricName: missing_replicas
+        threshold: '1'
+        query: 2 - clamp_max(count(http_response_time_ms) / 8, 2)
+

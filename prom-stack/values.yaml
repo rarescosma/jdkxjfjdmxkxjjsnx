@@ -1,0 +1,113 @@
+defaultRules:
+  rules:
+    alertmanager: false
+    windows: false
+
+alertmanager:
+  enabled: false
+
+nodeExporter:
+  operatingSystems:
+    aix:
+      enabled: false
+    darwin:
+      enabled: false
+
+prometheusOperator:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 400Mi
+    requests:
+      cpu: 100m
+      memory: 200Mi
+  prometheusConfigReloader:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 400Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+
+grafana:
+  sidecar:
+    datasources:
+      # Pulsar dashboards exclude all datasources starting with "Prometheus"
+      name: ClusterPrometheus
+  # Configure Pulsar dashboards for Grafana
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'pulsar'
+        orgId: 1
+        folder: 'Pulsar'
+        type: file
+        disableDeletion: true
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/pulsar
+  dashboards:
+    pulsar:
+      # Download the maintained dashboards from AL 2.0 licenced repo https://github.com/streamnative/apache-pulsar-grafana-dashboard
+      bookkeeper:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/bookkeeper.json
+        datasource: Prometheus
+      broker:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/broker.json
+        datasource: Prometheus
+      connector_sink:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/connector_sink.json
+        datasource: Prometheus
+      connector_source:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/connector_source.json
+        datasource: Prometheus
+      container:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/container.json
+        datasource: Prometheus
+      functions:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/functions.json
+        datasource: Prometheus
+      jvm:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/jvm.json
+        datasource: Prometheus
+      loadbalance:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/loadbalance.json
+        datasource: Prometheus
+      messaging:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/messaging.json
+        datasource: Prometheus
+      node:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/node.json
+        datasource: Prometheus
+      overview:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/overview.json
+        datasource: Prometheus
+      proxy:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/proxy.json
+        datasource: Prometheus
+      recovery:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/recovery.json
+        datasource: Prometheus
+      topic:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/topic.json
+        datasource: Prometheus
+      transaction:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/transaction.json
+        datasource: Prometheus
+      zookeeper:
+        url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/zookeeper-3.6.json
+        datasource: Prometheus
+
+prometheus:
+  prometheusSpec:
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1600Mi
+      requests:
+        cpu: 500m
+        memory: 800Mi

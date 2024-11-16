@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-app
+  namespace: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: example-app
+  template:
+    metadata:
+      labels:
+        app: example-app
+    spec:
+      containers:
+        - name: example-app
+          image: docker.io/getbetter0/podme-example-app:latest
+          imagePullPolicy: Always
+          ports:
+            - name: web
+              containerPort: 8000
+          resources:
+            limits:
+              cpu: "100m"
+              memory: 50Mi
+            requests:
+              cpu: 50m
+              memory: 30Mi
+          readinessProbe:
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            successThreshold: 1
+            httpGet:
+              path: /metrics
+              port: web
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: example-app
+  namespace: app
+  labels:
+    app: example-app
+spec:
+  selector:
+    app: example-app
+  ports:
+    - name: web
+      port: 8000
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: example-app
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames:
+      - app
+  selector:
+    matchLabels:
+      app: example-app
+  endpoints:
+    - port: web
+      interval: 5s

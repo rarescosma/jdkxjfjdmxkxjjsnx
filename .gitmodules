@@ -1,0 +1,3 @@
+[submodule "pulsar/helm-chart"]
+	path = pulsar/helm-chart
+	url = https://github.com/apache/pulsar-helm-chart
