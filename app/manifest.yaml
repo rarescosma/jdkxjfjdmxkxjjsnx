@@ -9,7 +9,6 @@ metadata:
   name: example-app
   namespace: app
 spec:
-  replicas: 2
   selector:
     matchLabels:
       app: example-app
