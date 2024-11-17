@@ -1,5 +1,5 @@
 # This file exists solely for the "forward . 1.1.1.1" directive
-# which configured CoreDNS to forward requests that aren't cluster-internal
+# which configures CoreDNS to forward requests that aren't cluster-internal
 # to a public resolver.
 #
 # This lets us use a CoreDNS pod as a standalone resolver on the host system.

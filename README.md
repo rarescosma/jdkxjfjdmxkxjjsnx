@@ -35,7 +35,7 @@ just pulsar
 
 ## Guide
 
-The core functionality of this repo is contained in the [`justfile`](justfile).
+The core functionality of this repository is contained in the [`justfile`](justfile).
 
 Without dwelling too much on the subject: we picked [just] as a modern-day alternative to `make`.
 
@@ -64,7 +64,7 @@ Available recipes:
 
 ### 1. Setup local Kubernetes cluster
 
-First, we'll use [minikube] to setup a local Kuberntes cluster:
+First, we'll use [minikube] to setup a local Kubernetes cluster:
 
 ```shell
 just minikube
@@ -109,7 +109,7 @@ abstracts over and automatically manages the lifecycle of
 Keda will pick up metrics from a Prometheus instance that we'll deploy using
 the [kube-prometheus-stack] Helm chart, so let's start with that.
 
-#### 2.0. Add the helm repos and update the index
+#### 2.0. Add the helm repositories and update the index
 
 ```shell
 just helm_repos
@@ -123,11 +123,11 @@ just prom_stack
 
 The chart is deployed with a couple of configuration overrides from [`prom-stack/values.yaml`](prom-stack/values.yaml).
 
-The overrides mostly cover:
+What we're overriding:
 
-- disabling alertmanager
-- specifying resource requests and limits for all components
-- allowing the prometheus operator to pick up arbitrary, non-Helm-managed, pod and service monitors
+- disable alertmanager
+- specify resource requests and limits for all components
+- allow the prometheus operator to pick up arbitrary, non-Helm-managed, pod and service monitors
 
 Once the stack has finished deploying, the grafana instance should be accessible via:
 
@@ -144,7 +144,7 @@ just keda
 > [!TIP]
 > Targets from the `helm charts` group support a `helm_op` argument.
 > This allows us to switch from `helm install` to `helm upgrade`, should
-> we decide to make any changes to the `values.yaml` config files and/or
+> we decide to make any changes to the `values.yaml` configuration files and/or
 > pass different variables to the helm command line:
 >
 > ```
@@ -160,19 +160,20 @@ just app
 The app is deployed simply from YAML manifests. The main [`manifests.yaml`](app/manifests.yaml)
 file contains definitions for its namespace, deployment, service and service monitor.
 
-To demonstrate autoscaling, we also define a [`ScaledObject`](https://keda.sh/docs/2.16/concepts/scaling-deployments/) 
+To illustrate autoscaling, we also define a [`ScaledObject`](https://keda.sh/docs/2.16/concepts/scaling-deployments/) 
 that will act on a custom metric - a fake representation of the application's request latency.
 
 ### 4. Deploy the message broker
 
-We chose [Apache Pulsar] as our message broker. The consumption model for it is push-based
-(consumers have to ACK/nACK the messages), and the storage architecture is index-based.
+We chose [Apache Pulsar] as our message broker. It uses a push-based consumption model
+(consumers have to ACK/nACK the messages), and an index-based storage architecture.
 
 Since we're running this demo on a local cluster, we configure Pulsar to have as small
 of a resource footprint as possible via the Helm chart [`values.yaml`](pulsar/values.yaml) file.
 
-There's a prerequisite script that needs to run before the chart itself, which is dependent
-on the chart repo. This had the unfortunate effect of us having to bundle it via a git submodule.
+The official documentation mentions a prerequisite script that needs to run before the chart 
+itself, which is dependent on the chart git repository. This had the unfortunate effect of us 
+having to bundle it as a git submodule.
 
 To deploy Pulsar:
 
