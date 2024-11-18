@@ -24,7 +24,7 @@ RESPONSE_TIME_METRIC: str = textwrap.dedent(
     http_response_time_ms {response_time}
     """
 ).strip()
-RESPONSE_TIME: ContextVar[str|None] = ContextVar("response_time", default=None)
+RESPONSE_TIME: ContextVar[str | None] = ContextVar("response_time", default=None)
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -45,9 +45,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
             # if a metric value has been set, add http_response_time_ms as well
             if (response_time := RESPONSE_TIME.get()) is not None:
-                self.wfile.write(RESPONSE_TIME_METRIC.format(response_time=response_time).encode())
+                self.wfile.write(
+                    RESPONSE_TIME_METRIC.format(response_time=response_time).encode()
+                )
             return
-
 
         self._send_text_status(404)
         self.wfile.write(b"Nope\n")
@@ -64,7 +65,7 @@ def run_server() -> None:
     except ValueError:
         port = DEFAULT_PORT
 
-    with socketserver.TCPServer(("", port), Handler) as httpd:
+    with socketserver.TCPServer(("", port), Handler) as httpd:  # type: ignore
         try:
             print(f"Serving at port {port}")
             httpd.serve_forever()
