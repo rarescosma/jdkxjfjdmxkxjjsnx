@@ -24,22 +24,30 @@ RESPONSE_TIME_METRIC: str = textwrap.dedent(
     http_response_time_ms {response_time}
     """
 ).strip()
-RESPONSE_TIME = ContextVar("response_time", default=None)
+RESPONSE_TIME: ContextVar[str|None] = ContextVar("response_time", default=None)
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self) -> None:
-        if self.path.rstrip("/") == "/metrics":
-            self._send_text_status(200)
-            self.wfile.write(COUNTER_METRIC.encode())
-            if (response_time := RESPONSE_TIME.get()) is not None:
-                self.wfile.write(RESPONSE_TIME_METRIC.format(response_time=response_time).encode())
-            return
-        elif (set_route := SET_ROUTE.match(self.path)) is not None:
+
+        # set a particular value for the http_response_time_ms metric
+        if (set_route := SET_ROUTE.match(self.path)) is not None:
             self._send_text_status(200)
             RESPONSE_TIME.set(set_route.groups(1)[0])
             self.wfile.write(b"Ok\n")
             return
+
+        # serve the prometheus metrics
+        elif self.path.rstrip("/") == "/metrics":
+            # the example_app_cnt metric always gets served
+            self._send_text_status(200)
+            self.wfile.write(COUNTER_METRIC.encode())
+
+            # if a metric value has been set, add http_response_time_ms as well
+            if (response_time := RESPONSE_TIME.get()) is not None:
+                self.wfile.write(RESPONSE_TIME_METRIC.format(response_time=response_time).encode())
+            return
+
 
         self._send_text_status(404)
         self.wfile.write(b"Nope\n")
