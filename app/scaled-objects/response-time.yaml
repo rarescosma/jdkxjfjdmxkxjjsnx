@@ -21,7 +21,7 @@ spec:
             value: 5
             periodSeconds: 5
           - type: Percent
-            value: 25 
+            value: 50
             periodSeconds: 10
   triggers:
     - type: prometheus
