@@ -10,7 +10,14 @@ from typing import Pattern
 
 DEFAULT_PORT: int = 8000
 SET_ROUTE: Pattern = re.compile(r"/set-response-time/([0-9]+)")
-RESP: str = textwrap.dedent(
+COUNTER_METRIC: str = textwrap.dedent(
+    """
+    # HELP example_app_cnt Pod counter metric.
+    # TYPE example_app_cnt gauge
+    example_app_cnt 1
+    """
+)
+RESPONSE_TIME_METRIC: str = textwrap.dedent(
     """
     # HELP http_response_time_ms Fake latency metric.
     # TYPE http_response_time_ms gauge
@@ -24,8 +31,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self) -> None:
         if self.path.rstrip("/") == "/metrics":
             self._send_text_status(200)
+            self.wfile.write(COUNTER_METRIC.encode())
             if (response_time := RESPONSE_TIME.get()) is not None:
-                self.wfile.write(RESP.format(response_time=response_time).encode())
+                self.wfile.write(RESPONSE_TIME_METRIC.format(response_time=response_time).encode())
             return
         elif (set_route := SET_ROUTE.match(self.path)) is not None:
             self._send_text_status(200)
