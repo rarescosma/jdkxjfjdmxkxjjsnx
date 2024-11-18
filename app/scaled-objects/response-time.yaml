@@ -5,15 +5,24 @@ metadata:
   name: example-app-scaled-object
   namespace: app
 spec:
+  # The name of the deployment
   scaleTargetRef:
     name: example-app
+
+  # How often to check the custom metric
   pollingInterval: 7
+
+  # Only affects 0->1 and 1->0 cases
   cooldownPeriod: 15
+
+  # Replica interval
   minReplicaCount: 2
   maxReplicaCount: 100
+
   advanced:
     horizontalPodAutoscalerConfig:
       behavior:
+        # More aggressive scale down
         scaleDown:
           stabilizationWindowSeconds: 15
           policies:
@@ -28,8 +37,8 @@ spec:
       useCachedMetrics: false
       metricType: AverageValue
       metadata:
+        # Check the in-cluster Prometheus
         serverAddress: http://prom-stack-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
         metricName: response_time
         threshold: "100"
         query: avg(http_response_time_ms{service="example-app"})
-
