@@ -90,7 +90,7 @@ prom_stack helm_op="install":
 # Install pulsar using helm.
 [group('helm charts')]
 pulsar helm_op="install":
-    kubectl get ns pulsar || kubectl create ns pulsar
+    kubectl get ns pulsar 2>/dev/null || kubectl create ns pulsar
     ./pulsar/helm-chart/scripts/pulsar/prepare_helm_release.sh -n pulsar -k pulsar-mini
     helm {{helm_op}} pulsar-mini apache/pulsar \
       --namespace pulsar \
